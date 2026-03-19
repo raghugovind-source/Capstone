@@ -32,14 +32,11 @@ This project trains a **binary classification model** to predict whether an S3 i
 ## 📁 Project Structure
 
 ```
-s3-staleness-predictor/
 │
 ├── README.md                          ← Project overview and findings (this file)
 ├── requirements.txt                   ← Python dependencies
-├── data/
-│   └── inventory_updated.csv          ← Raw dataset (user-supplied)
-└── notebooks/
-    └── staleness_predictor.ipynb      ← Main Jupyter notebook
+├── inventory_updated.csv              ← Raw dataset (user-supplied)
+└── staleness_predictor.ipynb          ← Main Jupyter notebook
 ```
 
 ---
@@ -58,14 +55,14 @@ inventory_updated.csv
 
 ### 3. Launch the notebook
 ```bash
-jupyter notebook notebooks/staleness_predictor.ipynb
+jupyter notebook staleness_predictor.ipynb
 ```
 
 ---
 
 ## 📓 Notebook
 
-👉 **[notebooks/staleness_predictor.ipynb](notebooks/staleness_predictor.ipynb)**
+👉 **[staleness_predictor.ipynb](staleness_predictor.ipynb)**
 
 ---
 

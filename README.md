@@ -53,7 +53,7 @@ pip install -r requirements.txt
 
 ### 2. Place your dataset
 ```
-data/inventory_updated.csv
+inventory_updated.csv
 ```
 
 ### 3. Launch the notebook

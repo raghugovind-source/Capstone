@@ -1,79 +1,47 @@
-# 📦 S3 Object Staleness Predictor
+📦 S3 Object Staleness Predictor — With Savings & Priority Groups
+Project Overview
+This project trains a binary classification model to predict whether an S3 object is stale, then enriches each prediction with an estimated annual storage cost savings and a priority action group — turning raw ML output into a ranked remediation queue for infrastructure teams.
+Dataset: inventory_updated.csv — 92,369 records, 10 columns.
+Target: is_stale (Boolean)
 
-## Project Overview
+🔍 Summary of Findings
+ItemDetailBest ModelRandom Forest ClassifierPrimary MetricF1-Score (Macro)Top Predictorsdays_since_last_access, days_since_modified, access_to_modify_gap, is_latest, delete_markerTotal Stale Objects IdentifiedSee notebook outputEstimated Annual SavingsDerived from object size × S3 Standard pricing ($0.023/GB/month)
+Priority Group Framework
+GroupPriority ScoreRecommended Action🔴 Critical≥ 0.75Delete immediately🟠 High0.50 – 0.75Review and delete within 30 days🟡 Medium0.25 – 0.50Archive to Glacier / Intelligent-Tiering🟢 Low< 0.25Monitor quarterly
+Priority Score Formula
+priority_score = (0.50 × normalised_savings)
+              + (0.30 × staleness_confidence)
+              + (0.20 × normalised_age)
 
-This project trains a **binary classification model** to predict whether an S3 inventory object is **stale** (`is_stale = True`) using object metadata from `inventory_updated.csv` (92,369 records, 10 columns). Early identification of stale objects supports automated lifecycle management, cost reduction, and storage optimization.
+50% savings weight — financial impact drives urgency
+30% confidence weight — model certainty reduces false-positive deletions
+20% age weight — older-accessed objects are more likely truly abandoned
 
----
+Key Findings
 
-## 🔍 Summary of Findings
+days_since_accessed is the single strongest staleness predictor — access recency alone separates most stale from active objects.
+Never-accessed objects (last_accessed was null) are flagged as a binary feature and independently rank as high staleness signals.
+Cumulative savings curve shows that deleting the top 20% of objects by priority score typically recovers the majority of available savings — enabling phased remediation.
+Bucket-level analysis reveals that a small number of buckets account for a disproportionate share of stale storage.
 
-| Item | Detail |
-|---|---|
-| **Dataset** | 92,369 S3 object records with 10 metadata features |
-| **Target** | `is_stale` (Boolean — binary classification) |
-| **Primary Metric** | **F1-Score (Macro)** |
-| **Metric Rationale** | Class imbalance makes accuracy misleading. Macro F1 penalizes poor performance on either class equally, ensuring the model handles both stale and active objects reliably |
-| **Baseline Model** | Logistic Regression |
-| **Best Model** | Random Forest Classifier |
-| **Top Predictors** | `days_since_last_access`, `days_since_modified`, `access_to_modify_gap`, `is_latest`, `delete_marker` |
 
-### Key Findings
-
-- **Recency of access is the strongest signal**: The new `last_accessed` column provides critical information — objects not accessed recently are overwhelmingly more likely to be stale. `days_since_last_access` ranked as the top feature.
-- **Access-to-modification gap matters**: Objects whose last access date closely trails their modification date (i.e., written but never revisited) show high staleness rates.
-- **Version and deletion state are strong predictors**: Non-latest versions (`is_latest = False`) and objects with a `delete_marker` show significantly higher staleness rates.
-- **Encryption type provides signal**: Unencrypted objects correlate with older storage practices and higher staleness.
-- **SMOTE** oversampling on training data only was used to address class imbalance without leaking information into the test set.
-- Random Forest outperformed the Logistic Regression baseline on both F1-Macro and ROC-AUC with stable cross-validation scores.
-
----
-
-## 📁 Project Structure
-
-```
+📁 Project Structure
+s3-staleness-predictor/
 │
-├── README.md                          ← Project overview and findings (this file)
+├── README.md                          ← This file
 ├── requirements.txt                   ← Python dependencies
-├── inventory_updated.csv              ← Raw dataset (user-supplied)
-└── staleness_predictor.ipynb          ← Main Jupyter notebook
-```
+├── data/
+│   └── inventory_updated.csv          ← Raw dataset (user-supplied)
+└── notebooks/
+    └── staleness_predictor.ipynb      ← Main Jupyter notebook
 
----
+🚀 How to Run
+bashpip install -r requirements.txt
+jupyter notebook notebooks/staleness_predictor.ipynb
+Place inventory_updated.csv in the data/ folder before running.
 
-## 🚀 How to Run
+📓 Notebook
+👉 notebooks/staleness_predictor.ipynb
 
-### 1. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Place your dataset
-```
-inventory_updated.csv
-```
-
-### 3. Launch the notebook
-```bash
-jupyter notebook staleness_predictor.ipynb
-```
-
----
-
-## 📓 Notebook
-
-👉 **[staleness_predictor.ipynb](staleness_predictor.ipynb)**
-
----
-
-## 🛠 Dependencies
-
-| Library | Purpose |
-|---|---|
-| `pandas` | Data loading, cleaning, feature engineering |
-| `numpy` | Numerical operations |
-| `matplotlib` | Base static plotting |
-| `seaborn` | Statistical visualizations |
-| `plotly` | Interactive visualizations |
-| `scikit-learn` | Modeling, preprocessing, evaluation |
-| `imbalanced-learn` | SMOTE oversampling |
+🛠 Dependencies
+LibraryPurposepandasData loading, cleaning, feature engineeringnumpyNumerical operationsmatplotlibStatic plottingseabornStatistical visualisationsplotlyInteractive chartsscikit-learnModelling, preprocessing, evaluationimbalanced-learnSMOTE oversampling

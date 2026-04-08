@@ -56,10 +56,8 @@ s3-staleness-predictor/
 │
 ├── README.md                          ← This file
 ├── requirements.txt                   ← Python dependencies
-├── data/
-│   └── inventory_updated.csv          ← Raw dataset (user-supplied)
-└── notebooks/
-    └── staleness_predictor.ipynb      ← Main Jupyter notebook
+├── inventory_updated.csv          ← Raw dataset (user-supplied)
+└── staleness_predictor.ipynb      ← Main Jupyter notebook
 ```
 
 ---
@@ -68,7 +66,7 @@ s3-staleness-predictor/
 
 ```bash
 pip install -r requirements.txt
-jupyter notebook notebooks/staleness_predictor.ipynb
+jupyter notebook staleness_predictor.ipynb
 ```
 
 Place `inventory_updated.csv` in the `data/` folder before running.
@@ -77,7 +75,7 @@ Place `inventory_updated.csv` in the `data/` folder before running.
 
 ## 📓 Notebook
 
-👉 **[notebooks/staleness_predictor.ipynb](notebooks/staleness_predictor.ipynb)**
+👉 **[staleness_predictor.ipynb](staleness_predictor.ipynb)**
 
 ---
 
